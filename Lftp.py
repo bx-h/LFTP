@@ -221,8 +221,9 @@ class LftpSocket:
                 sender.state = LftpSocket.STATE_ESTABLISHED
             else:
                 logger.log(Level.ERROR, "Received unexpected packet " + str(self))
-                ''' This might happen if sender didn't receive our ACK, so we can simply resend ACK,'''
-                ''' But only if no DATA packets have been received'''
+                '''
+                假如发送方没有收到ACK，则可能导致它处于错误的状态。此时重新发送ACK包
+                '''
                 if (sender.nextReceivingSequenceNumber == 0):
                     packet = LftpPacket()
                     packet.type = LftpPacket.TYPE_ACK
@@ -239,7 +240,7 @@ class LftpSocket:
                     logger.log(Level.ERROR,
                                "Packets out of order, was expecting:" + str(sender.nextReceivingSequenceNumber))
                     if lftpPacket.seqnum <= sender.nextReceivingSequenceNumber:
-                        ''' We already got this packet, so we simply ACK it '''
+                        ''' 已经收到过这个包，因此需要重新发送同样的序号 '''
                         logger.log(Level.INFO, "Duplicated packet, sending ACK")
                         packet = LftpPacket()
                         packet.seqnum = lftpPacket.seqnum + 1
@@ -255,7 +256,7 @@ class LftpSocket:
                 packet.type = LftpPacket.TYPE_ACK
                 self.sendPacketControl(addr, packet)
             else:
-                logger.log(Level.ERROR, "ERROR session not ESTAB " + str(self) + " " + str(lftpPacket))
+                logger.log(Level.ERROR, "ERROR session not ESTABLISH " + str(self) + " " + str(lftpPacket))
                 self.registerPacketReceivedIgnored()
 
         elif lftpPacket.type == LftpPacket.TYPE_ACK:
@@ -357,18 +358,16 @@ class LftpSocketPeer:
 
     def __handleTimeoutData(self, lftpSecNum):
         logger.log(Level.DEBUG, "Handling packet timeout DATA packet seq:" + str(lftpSecNum))
-        ''' Here we need to remove all other DATA packet timeouts'''
         for seq in range(lftpSecNum, self.nextSendingPacketSeqNumber):
             Event.eventTimeoutDelete(self.__handleTimeoutData, seq)
         if self.__incrementRetries():  # 若返回false，表示超过最大retry次数；否则可以进行retry
-            ''' Decrease window size, reset packet index to the one we lost'''
+
             self.window = 1 if self.window - 1 < 1 else self.window - 1
             # 丢包表示buffer满了，应该减小window
             self.nextSendingPacketSeqNumber = lftpSecNum
             # 下一个送的就是丢失的
             self.__emptyBuffer()
             self.retries = self.retries + 1
-            # 怎么又加1？？？_incrementRetries()里面不是加过了吗
 
     def close(self):
         ''' Order to close the socket'''
@@ -376,7 +375,7 @@ class LftpSocketPeer:
         self.__checkClose()
 
     def __checkClose(self):
-        ''' Send FIN if all packet have been sent - last packet in a buffer was sent and all have been ACK'ed'''
+
         if self.closePending is True:  # closepending 用来检测是否可以关闭服务器，尽在LftpSocketPeer出现
             logger.log(Level.DEBUG, str(self.nextBufferPacketSeqNumber) + " > " + str(self.nextSendingPacketSeqNumber) +
                        " > " + str(self.nextAckSeqNumber))
