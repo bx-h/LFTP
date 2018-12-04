@@ -149,7 +149,7 @@ class FileInfo:
     sendStarted = None
 
 if __name__ == '__main__':
-    Logging.Logger.setFile("receiver.log")  # Set file for log messages
+    Logging.Logger.setFile("server.log")  # Set file for log messages
     if len(sys.argv) < 2:
         print("Please provide port number, ex: python LftpReceiver.py 5000")
     else:

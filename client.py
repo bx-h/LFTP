@@ -136,7 +136,7 @@ if __name__ == '__main__':
     
     #print("Will send files:" + str(files) + " to hosts:" + str(hosts)) # 打印将要发送的文件到哪个host
     
-    Logging.Logger.setFile("sender.log") # log为输出文件？setFile指以w格式打开文件，并付给logger的file参数
+    Logging.Logger.setFile("client.log") # log为输出文件？setFile指以w格式打开文件，并付给logger的file参数
     #for fileToSend in files:
 
     fileSender = FileSender(filename, hosts, RType)
