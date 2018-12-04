@@ -9,7 +9,7 @@ from Logging import Logger
 from Logging import Level
 
 lftpSockets = []
-logger = Logger("RUDP", Level.TRACE)
+logger = Logger("LFTP", Level.TRACE)
 
 
 def createSocket(addr, port):
@@ -117,13 +117,13 @@ class LftpSocket:
         self.closed = False
 
     def __str__(self):  # Override string representation
-        return "RUDP socket:" + str(self.__dict__)
+        return "LFTP socket:" + str(self.__dict__)
 
     def __eq__(self, other):
         return self.socket.fileno() == other.socket.fileno()
 
     def close(self):
-        ''' Called by RUDP container instructing to close this RUDP socket'''
+        ''' Called by LFTP container instructing to close this LFTP socket'''
         self.closePending = True
         ''' Order close all sending peer sessions'''
         for peer in self.peers:
@@ -459,7 +459,7 @@ class LftpSocketPeer:
 
 
 class LftpPacket:
-    """ RUDP packet class"""
+    """ LFTP packet class"""
     TYPE_DATA = 1
     TYPE_SYN = 2
     TYPE_ACK = 4
