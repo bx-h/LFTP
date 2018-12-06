@@ -1,9 +1,3 @@
-'''
-Created on May 12, 2013
-
-@author: Saulius Alisauskas
-'''
-
 import struct
 
 class VsPacket:
