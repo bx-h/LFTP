@@ -8,6 +8,7 @@ from random import randint
 from Logging import Logger
 from Logging import Level
 
+# 基本功能包
 lftpSockets = []
 logger = Logger("LFTP", Level.TRACE)
 
