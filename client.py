@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 import Lftp
 import Event
 import sys
@@ -30,7 +29,7 @@ class FileSender:
         for desination in self.addresses:
             self.lftpSocket.addPeer(desination)
         
-        ''' Send BEGIN packet'''
+        ''' 发送开始包'''
         vsFtpPacket = VsPacket()
         vsFtpPacket.type = VsPacket.TYPE_BEGIN
         if (self.RType == "get"):
